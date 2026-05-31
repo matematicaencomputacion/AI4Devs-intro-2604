@@ -23,6 +23,21 @@
     const qIII = document.getElementById("qIII");
     const qIV = document.getElementById("qIV");
 
+    // --- Validacion: todos los elementos deben existir (fallar rapido) ---
+    const requeridos = {
+        entrada: entrada, boton: boton, limpiar: limpiar, copiar: copiar,
+        contador: contador, resultado: resultado,
+        contenedorResultado: contenedorResultado, alerta: alerta,
+        qII: qII, qI: qI, qIII: qIII, qIV: qIV
+    };
+    const faltantes = Object.keys(requeridos).filter(function (id) {
+        return !requeridos[id];
+    });
+    if (faltantes.length > 0) {
+        console.error("Faltan elementos en el HTML (ids): " + faltantes.join(", "));
+        return; // detenemos la inicializacion para no romper mas adelante
+    }
+
     // --- Logica principal ---
 
     // Invierte una cadena de texto
@@ -40,14 +55,15 @@
 
     // Actualiza la pantalla cada vez que cambia el texto
     function actualizar() {
-        const texto = entrada.value;
+        const textoCrudo = entrada.value;
+        const texto = textoCrudo.trim();   // ignoramos espacios sueltos, igual que confirmar()
         const largo = texto.length;
 
-        // El plano refleja siempre lo que se escribe, en tiempo real
+        // El plano refleja el texto (sin espacios al borde), en tiempo real
         actualizarPlano(texto);
 
         contador.textContent = largo + " / " + MAX_LARGO;
-        limpiar.classList.toggle("hidden", largo === 0);
+        limpiar.classList.toggle("hidden", textoCrudo.length === 0);
 
         // Validacion de largo maximo
         if (largo > MAX_LARGO) {
